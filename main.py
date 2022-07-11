@@ -2,31 +2,41 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Create an array
-x = np.arange(10)
-y = np.random.randint(low=1, high=10, size=10)
-
 # Preprocessing Input data
 data = pd.read_csv(r'C:\Users\asadm\OneDrive\Рабочий стол\mnk\pearson.csv')
-x = data['Father'].values
-y = data['Son'].values
+X = data['Father'].values
+Y = data['Son'].values
 
-n = len(x)
+# calculate mean of x & y using an inbuilt numpy method mean()
+mean_x = np.mean(X)
+mean_y = np.mean(Y)
 
-u1 =  np.ones(n)
-A = np.concatenate([u1, x], axis = 0)
-A = np.reshape(A, [n, 2], order = 'F')
+# total no.of input values
+m = len(X)
 
-B = np.matmul(A.T, A)
-B = np.linalg.inv(B)
+# using the formula to calculate m & c
+numer = 0
+denom = 0
+for i in range(m):
+  numer += (X[i] - mean_x) * (Y[i] - mean_y)
+  denom += (X[i] - mean_x) ** 2
+m = numer / denom
+c = mean_y - (m * mean_x)
 
-A = np.matmul(B, A.T)
-u = np.matmul(A, y)
+print (f'm = {m} \nc = {c}')
 
-y_est = u[0] + u[1]*x
+# plotting values and regression line
+max_x = np.max(X) + 10
+min_x = np.min(Y) - 10
 
-plt.scatter(x, y, color = 'red')
-plt.plot([min(x), max(x)], [min(y_est), max(y_est)], color = 'blue')
+# calculating line values x and y
+x = np.linspace (min_x, max_x, 100)
+y = c + m * x
+
+plt.plot(x, y, color='blue', label='Regression Line')
+plt.scatter(X, Y, c='red', label='data points')
+
 plt.xlabel('Fathers height')
 plt.ylabel('Sons height')
+plt.legend()
 plt.show()
